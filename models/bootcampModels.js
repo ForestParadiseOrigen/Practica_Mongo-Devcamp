@@ -5,7 +5,10 @@ const BoocampSchema = new mongoose.Schema(
     {
         "name": {
             type: String,
-            unique: true,
+            unique: [
+                true,
+                "El nombre ya esta registrado"
+            ],
             required: [
                 true,
                 "Nombre requerido"
