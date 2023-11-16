@@ -21,10 +21,10 @@ const ReviewSchema = new mongoose.Schema(
             required: [
                 true],
             max: [
-                1,
+                5,
                 "telefono debe de ser de 1 digitos"],
             min: [
-                15,
+                1,
                 "telefono debe de ser de minimo 5 digitos"
             ]
         }
