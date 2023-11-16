@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const ReviewSchema = new mongoose.Schema(
     {
@@ -19,14 +19,10 @@ const ReviewSchema = new mongoose.Schema(
         "rating": {
             type: Number,
             required: [
-                true],
-            max: [
-                5,
-                "telefono debe de ser de 1 digitos"],
-            min: [
-                1,
-                "telefono debe de ser de minimo 5 digitos"
-            ]
+                true
+            ],
+            min : 1,
+            max : 10
         }
     }
 )
