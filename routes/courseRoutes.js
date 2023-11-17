@@ -1,6 +1,6 @@
-const express= require('express')
-const CourseModel = require('../models/courseModel')
-const moongose = require('mongoose')
+const express= require('express');
+const CourseModel = require('../models/courseModel');
+const moongose = require('mongoose');
 
 const router =  express.Router()
 

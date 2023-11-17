@@ -1,88 +1,140 @@
-const express= require('express')
+const express = require("express");
+const UserModel = require("../models/userModel");
+const router = express.Router();
+const mongoose = require("mongoose");
 
-const UserModel = require('../models/userModel')
+// router.get("/", async (req, res)=>{
 
+//     const users =
+//         await UserModel.find()
 
-const router =  express.Router()
+//     res.json({
+//         success:true,
+//         data: users
+//     })
+// })
 
-//traer todos los cursos
-router.get("/", async (req, res)=>{
-    //utilizar el modelo para seleccionar todos los bootcamps en la base de datos
-    const users =
-        await UserModel.find()
-    
-    res.json({
-        success:true,
-        data: users
-    })
-})
+// router.get("/:id", async (req, res)=>{
 
+//     userId = req.params.id
+//     const user =
+//         await    UserModel.findById(userId);
 
-//traer cursos por id
-router.get("/:id", async (req, res)=>{
+//     res.json({
+//         success:true,
+//         data: user
+//     });
+// });
 
-    //del parametro de la url
-    userId = req.params.id
-    const user = 
-        await    UserModel.findById(userId)
+// Register user
+router.post("/register", async (req, res) => {
+  try {
+    const user = await UserModel.create(req.body);
 
-    res.json({
-        success:true,
-        data: user
-    })
-})
+    res.status(201).json({
+      success: true,
+      data: user,
+    });
 
+  } catch (error) {
 
-//crear un curso
-router.post("/", async (req, res)=>{
-    //el nuevo bootcamp vendra al servidor
-    //a traves del body del cliente
-    const newUser =
-        await UserModel.create(req.body)
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
 
-    res.json({
-        success:true,
-        data: newUser
-    })
-})
+  }
+});
 
+// Login user
+router.post("/login", async (req, res) => {
+    /*
+     * No llegan datos 
+     * Llega email pero no usuario
+     * Lega email y usuario pero la contraseña es incorrecta
+     *  Todo correcto
+     */
 
-//modificar cursos cursos por id
-router.put("/:id", async (req, res)=>{
-    
-    const userId = req.params.id
-    const updUser= 
-        await UserModel.findByIdAndUpdate(
-            userId,
-            req.body,
-            {
-                new: true
-            })
-    res.json({
-        success:true,
-        data: updUser
-    })
-})
+    const {email, password} = req.body;
 
-//eliminar un curso
-router.delete("/:id", (req, res)=>{
-    res.json({
-        success:true,
-        msg:`aqui se eliminara el curso cuyo id es ${req.params.id}`
-    })
-})
+    if (!email || !password) {
+        return res.status(400).json({
+            success:false,
+            message: 'The email or the passwor is wrong'
+        });
+    }else{
+        const user = await UserModel.findOne({email}).select("+password");
 
-router.delete("/:id", async (req, res)=>{
+        if (!user) {
+            return res.status(400).json({
+                success:false,
+                message: 'The email or the passwor is wrong'
+            });
+        }else{
+            
+            const isMatch = await user.compararPassword(password);
+            if ( isMatch ) {
+                return res.status(200).json({
+                    success: true,
+                    message: "User found",
+                    data: user
+                });
+            }else{
+                return res.status(400).json({
+                    success:false,
+                    message: 'The email or the passwor is wrong'
+                });
+            }
+        }
+    }
+        
+});
 
-    const userId = req.params.id
-    const delUser= 
-    await UserModel.findByIdAndDelete(
-        userId
-        )
-    res.json({
-        success:true,
-        data: delUser
-    })
-})
+// router.post("/", async (req, res)=>{
 
-module.exports = router
+//     const newUser =
+//         await UserModel.create(req.body)
+
+//     res.json({
+//         success:true,
+//         data: newUser
+//     })
+// })
+
+// router.put("/:id", async (req, res)=>{
+
+//     const userId = req.params.id
+//     const updUser=
+//         await UserModel.findByIdAndUpdate(
+//             userId,
+//             req.body,
+//             {
+//                 new: true
+//             })
+//     res.json({
+//         success:true,
+//         data: updUser
+//     })
+// })
+
+// router.delete("/:id", (req, res)=>{
+//     res.json({
+//         success:true,
+//         msg:`aqui se eliminara el curso cuyo id es ${req.params.id}`
+//     })
+// })
+
+// router.delete("/:id", async (req, res)=>{
+
+//     const userId = req.params.id
+//     const delUser=
+//     await UserModel.findByIdAndDelete(
+//         userId
+//         )
+//     res.json({
+//         success:true,
+//         data: delUser
+//     })
+// })
+
+module.exports = router;
